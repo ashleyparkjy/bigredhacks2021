@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+// import Cropper from 'react-easy-crop';
 
 const App = () => {
   // useRef is the React way of accessing the DOM elements. What it does is,
@@ -7,6 +8,7 @@ const App = () => {
   const videoRef = useRef(null);
   const photoRef = useRef(null);
   const stripRef = useRef(null);
+  const strip2Ref = useRef(null);
 
   useEffect(() => {
     getVideo();
@@ -43,6 +45,37 @@ const App = () => {
     }, 200);
   };
 
+  const crop = (data, dx, dy, dWidth, dHeight) => {
+    // let video = videoRef.current;
+    let photo = photoRef.current;
+    let ctx = photo.getContext('2d');
+    // var image = document.getElementById('img');
+    var image = new Image();
+    image.onload = function () {
+      ctx.drawImage(image, dx, dy, dWidth, dHeight);
+      console.log('onload called');
+    };
+    image.src = data;
+    // let photo = photoRef.current;
+    const new_data = photoRef.current.toDataURL('image2/jpeg');
+    // const new_data = ctx.drawImage(image, dx, dy, dWidth, dHeight);
+    // .toDataURL('croped_img/jpeg');
+    console.log('crop image');
+    console.log('new_data: ', new_data);
+
+    const link = document.createElement('a');
+    link.href = data;
+    link.setAttribute('download', 'myWebcam');
+    link.innerHTML = `<img src='${new_data}' alt='thumbnail' id='img'/>`;
+
+    let strip2 = strip2Ref.current;
+    if (strip2.firstChild) {
+      strip2.replaceChild(link, strip2.firstChild);
+    } else {
+      strip2.appendChild(link);
+    }
+  };
+
   // const getCoord = (data) => {
   //   // build request header to send to vision api
   //   // const request =
@@ -65,13 +98,15 @@ const App = () => {
     const link = document.createElement('a');
     link.href = data;
     link.setAttribute('download', 'myWebcam');
-    link.innerHTML = `<img src='${data}' alt='thumbnail'/>`;
+    link.innerHTML = `<img src='${data}' alt='thumbnail' id='img'/>`;
 
     if (strip.firstChild) {
       strip.replaceChild(link, strip.firstChild);
     } else {
       strip.appendChild(link);
     }
+
+    crop(data, 40, 20, 10, 10);
   };
 
   return (
@@ -88,6 +123,9 @@ const App = () => {
       <canvas ref={photoRef} style={{ display: 'none' }} />
       <div style={{ margin: '10px' }}>
         <div ref={stripRef} />
+      </div>
+      <div style={{ margin: '10px' }}>
+        <div ref={strip2Ref} />
       </div>
     </div>
   );
