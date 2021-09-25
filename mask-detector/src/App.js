@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
 const App = () => {
   // useRef is the React way of accessing the DOM elements. What it does is,
@@ -24,14 +24,14 @@ const App = () => {
         video.play();
       })
       .catch((err) => {
-        console.error('error:', err);
+        console.error("error:", err);
       });
   };
 
   const paintToCanvas = () => {
     let video = videoRef.current;
     let photo = photoRef.current;
-    let ctx = photo.getContext('2d');
+    let ctx = photo.getContext("2d");
 
     const width = 320;
     const height = 240;
@@ -43,12 +43,42 @@ const App = () => {
     }, 200);
   };
 
-  // const getCoord = (data) => {
-  //   // build request header to send to vision api
-  //   // const request =
-  //   // send request to vision api
-  //   // given response, crop image with x,y coordinates
-  // };
+  const getCoord = (data) => {
+    // build request header to send to vision api
+    const request = {
+      requests: [
+        {
+          image: {
+            content: data,
+          },
+          features: [
+            {
+              maxResults: 10,
+              type: "FACE_DETECTION",
+            },
+          ],
+        },
+      ],
+    };
+    console.log(request);
+
+    try {
+      fetch("https://vision.googleapis.com/v1/images:annotate", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization:
+            "Bearer ya29.c.Kp8BEQjREaTQ7MH6nYAumueziSkLkuol8Xo8IbOjng9l9ePc5OQ3DXeCZ7Yr5AGnCYCyCoa4AiGML4EI41tCAnnGF5wjDQ0OufGtULMQ8iNRe6LXucTQ5oUAfDY-uI2cXeAXG66tG7p_EIpgRhukqAKlFYdH2YcugkX6e5TyKbUPI3gvQq4ixK8pmO6xb_Ey-aMmTGBaaEWT1pcrToDSVu6n...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
+        },
+        body: JSON.stringify(request),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    // send request to vision api
+    // given response, crop image with x,y coordinates
+  };
 
   const takePhoto = () => {
     let photo = photoRef.current;
@@ -57,14 +87,14 @@ const App = () => {
     console.warn(strip);
 
     // IMAGE DATA
-    const data = photo.toDataURL('image/jpeg');
+    const data = photo.toDataURL("image/jpeg");
     console.warn(data);
     // send request to vertex AI
-    //
+    getCoord(data.split(",")[1]);
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = data;
-    link.setAttribute('download', 'myWebcam');
+    link.setAttribute("download", "myWebcam");
     link.innerHTML = `<img src='${data}' alt='thumbnail'/>`;
 
     if (strip.firstChild) {
@@ -76,17 +106,17 @@ const App = () => {
 
   return (
     <div>
-      <h1 style={{ margin: '10px' }}> Mask Detector </h1>
+      <h1 style={{ margin: "10px" }}> Mask Detector </h1>
       <video
         onCanPlay={() => paintToCanvas()}
         ref={videoRef}
-        style={{ margin: '10px' }}
+        style={{ margin: "10px" }}
       />
-      <div style={{ margin: '10px' }}>
+      <div style={{ margin: "10px" }}>
         <button onClick={() => takePhoto()}>Take a photo</button>
       </div>
-      <canvas ref={photoRef} style={{ display: 'none' }} />
-      <div style={{ margin: '10px' }}>
+      <canvas ref={photoRef} style={{ display: "none" }} />
+      <div style={{ margin: "10px" }}>
         <div ref={stripRef} />
       </div>
     </div>
