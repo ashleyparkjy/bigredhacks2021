@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 // import Cropper from 'react-easy-crop';
 
 const App = () => {
@@ -46,34 +46,37 @@ const App = () => {
     }, 200);
   };
 
-  const crop = (data, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) => {
+  const crop = (sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) => {
     // let video = videoRef.current;
     let photo = photo2Ref.current;
     photo.width = 800;
     photo.height = 450;
-    let ctx = photo.getContext('2d');
+    let ctx = photo.getContext("2d");
     // var image = document.getElementById('img');
-    var image = document.getElementById("screenshot");  
-    image.width ="800";
-    image.height ="450";
-    image.onload = function () {
-      ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-      console.log('onload called');
-      const new_data = photo2Ref.current.toDataURL('image2/jpeg');
-      console.log('crop image');
-      console.log('new_data: ', new_data);
-      const link = document.createElement('a');
-      // link.href = data;
-      // link.setAttribute('download', 'myWebcam');
-      link.innerHTML = `<img src='${new_data}' alt='thumbnail' id='cropped_img'/>`;
-  
-      let strip2 = strip2Ref.current;
-      if (strip2.firstChild) {
-        strip2.replaceChild(link, strip2.firstChild);
-      } else {
-        strip2.appendChild(link);
-      }
-    };
+    var image = document.getElementById("screenshot");
+    // var image = new Image();
+    // image.src = data;
+    image.width = "800";
+    image.height = "450";
+
+    ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+    console.log("onload called");
+    const new_data = photo2Ref.current.toDataURL("image2/jpeg");
+    detectMask(new_data.split(",")[1]);
+    console.log("crop image");
+    console.log("new_data: ", new_data);
+    const link = document.createElement("a");
+    // link.href = data;
+    // link.setAttribute('download', 'myWebcam');
+    link.innerHTML = `<img src='${new_data}' alt='thumbnail' id='cropped_img'/>`;
+
+    let strip2 = strip2Ref.current;
+    if (strip2.firstChild) {
+      strip2.replaceChild(link, strip2.firstChild);
+    } else {
+      strip2.appendChild(link);
+    }
+
     // let photo = photoRef.current;
     // const new_data = photoRef.current.toDataURL('image2/jpeg');
     // // const new_data = ctx.drawImage(image, dx, dy, dWidth, dHeight);
@@ -100,6 +103,7 @@ const App = () => {
   //   // send request to vision api
   //   // given response, crop image with x,y coordinates
   // };
+  let faceCoords = undefined;
   const getCoord = (data) => {
     // build request header to send to vision api
     const request = {
@@ -118,7 +122,6 @@ const App = () => {
       ],
     };
     console.log(request);
-
     try {
       fetch("https://vision.googleapis.com/v1/images:annotate", {
         method: "POST",
@@ -126,31 +129,48 @@ const App = () => {
           Accept: "application/json",
           "Content-Type": "application/json",
           Authorization:
-            "Bearer ya29.c.Kp8BEQgLbLHcSU3MvmwJFs4txeesUJt8uFC0St0B3QRq8OZ6XZvyXifHUccUf3PqNXLK_TBym96pVAURMPMapBS20IxZ9uh1mdRYkpeQz4eWKVyHREZ-jarPMvTo9sJdV7Ezx0B3RkskBQkBXif5mDzyPTN3YLj6f3iZH4B3oW87U2p-1InYz6VYo6BAZ0qaOuLfHg4E8FcVM-Cz506AJ7q7...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
+            "Bearer ya29.c.Kp8BEQimwSN7X1aTJNH_rbNaSwlLeYr1G1Uqf-4pmSLcP_zfiuetryX_jaU9nk399a8RUnnhTs94kMGEJyLnHOzoNF8am48Os5vkRFbOiWA6vnNnqSJEoBGrcUD3PDAsK-61IPKohiLIBY-bG1vRlUVRPAfnao64IalWCzqt8GzomVlCRBxbZIqbezV4dLaYi1OAlbZ7kI_nVr_gDEwjf4Ic...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
         },
         body: JSON.stringify(request),
-      }).then(response => response.json())
-        .then(data => {
+      })
+        .then((response) => response.json())
+        .then((data) => {
           console.log(data);
-          console.log(data.responses[0].faceAnnotations)
+          console.log(data.responses[0].faceAnnotations);
           let faceAnnotations = data.responses[0].faceAnnotations;
 
           for (let i = 0; i < faceAnnotations.length; i++) {
-            console.log(faceAnnotations[i].boundingPoly.vertices);
+            console.log(faceAnnotations[i].fdBoundingPoly.vertices);
           }
-
-          let faceCoords = faceAnnotations[0].boundingPoly.vertices
-
+          console.log("Test");
+          faceCoords = faceAnnotations[0].fdBoundingPoly.vertices;
+          console.log(faceCoords);
         })
-        .catch(error => {
+        .then(() => {
+          const xDiff = faceCoords[1].x - faceCoords[0].x;
+          const yDiff = faceCoords[2].y - faceCoords[0].y;
+          const diff = Math.min(xDiff, yDiff);
+          console.log(xDiff);
+          crop(
+            faceCoords[0].x,
+            faceCoords[0].y,
+            diff,
+            diff,
+            faceCoords[0].x,
+            faceCoords[0].y,
+            diff,
+            diff
+          );
+        })
+        .catch((error) => {
           console.log(error);
         });
     } catch (error) {
       console.log(error);
     }
-    detectMask(data);
-    // send request to vision api
+    return faceCoords;
 
+    // send request to vision api
 
     // given response, crop image with x,y coordinates
   };
@@ -176,7 +196,7 @@ const App = () => {
             Accept: "application/json",
             "Content-Type": "application/json",
             Authorization:
-              "Bearer ya29.a0ARrdaM9JQx8oBt5qzAe_ee3mL6VfsPDTSeiuCV4mA6QiDJ1QnVStlbv6qmPQc11pdzv32RkXQdtk91Nmofpjv1Fg-R0ojNZD3l50vSsSjeaYNMNRJ33-DqgyjfohC_Grawd1YM_OC8AafJFTCL_DN-z4KlgoKQopiPqt4A",
+              "Bearer ya29.a0ARrdaM9vSyTV_W1ZcN133u8IG6nKoLaKh0vHj0zlk98-MP2lOgu_9xOcCeOOf4Nm5566Wu46jybgArlXm37ew-fA7AOQLjaHd4jocHwXDUZ2nSLWB620ab4Ttq9ua0qeGnpuumU4wZ6eP3iNEl7lp6vBw2Oy4Yj_pEWGVg",
           },
           body: JSON.stringify(request),
         }
@@ -186,7 +206,7 @@ const App = () => {
     }
   };
 
-  const takePhoto = () => {
+  const takePhoto = async () => {
     let photo = photoRef.current;
     let strip = stripRef.current;
 
@@ -198,7 +218,6 @@ const App = () => {
     // send request to vertex AI
     getCoord(data.split(",")[1]);
 
-
     const link = document.createElement("a");
     // link.href = data;
     // link.setAttribute('download', 'myWebcam');
@@ -209,8 +228,6 @@ const App = () => {
     } else {
       strip.appendChild(link);
     }
-
-    crop(data, 150, 100, 400, 200, 150, 100, 400, 200);
   };
 
   return (
@@ -232,7 +249,7 @@ const App = () => {
         <div ref={stripRef} />
       </div>
       <canvas ref={photo2Ref} style={{ display: "none" }} />
-      <div style={{ margin: '10px' }}>
+      <div style={{ margin: "10px" }}>
         <div ref={strip2Ref} />
       </div>
     </div>
