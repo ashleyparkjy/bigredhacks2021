@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 // import Cropper from 'react-easy-crop';
 
 const App = () => {
@@ -27,14 +27,14 @@ const App = () => {
         video.play();
       })
       .catch((err) => {
-        console.error('error:', err);
+        console.error("error:", err);
       });
   };
 
   const paintToCanvas = () => {
     let video = videoRef.current;
     let photo = photoRef.current;
-    let ctx = photo.getContext('2d');
+    let ctx = photo.getContext("2d");
 
     const width = 800;
     const height = 450;
@@ -51,21 +51,21 @@ const App = () => {
     let photo = photo2Ref.current;
     photo.width = 800;
     photo.height = 450;
-    let ctx = photo.getContext('2d');
+    let ctx = photo.getContext("2d");
     // var image = document.getElementById('img');
-    var image = document.getElementById('screenshot');
+    var image = document.getElementById("screenshot");
     // var image = new Image();
     // image.src = data;
-    image.width = '800';
-    image.height = '450';
+    image.width = "800";
+    image.height = "450";
 
     ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-    console.log('onload called');
-    const new_data = photo2Ref.current.toDataURL('image2/jpeg');
-    detectMask(new_data.split(',')[1]);
-    console.log('crop image');
-    console.log('new_data: ', new_data);
-    const link = document.createElement('a');
+    console.log("onload called");
+    const new_data = photo2Ref.current.toDataURL("image2/jpeg");
+    detectMask(new_data.split(",")[1]);
+    console.log("crop image");
+    console.log("new_data: ", new_data);
+    const link = document.createElement("a");
     // link.href = data;
     // link.setAttribute('download', 'myWebcam');
     link.innerHTML = `<img src='${new_data}' alt='thumbnail' id='cropped_img'/>`;
@@ -115,7 +115,7 @@ const App = () => {
           features: [
             {
               maxResults: 10,
-              type: 'FACE_DETECTION',
+              type: "FACE_DETECTION",
             },
           ],
         },
@@ -123,13 +123,13 @@ const App = () => {
     };
     console.log(request);
     try {
-      fetch('https://vision.googleapis.com/v1/images:annotate', {
-        method: 'POST',
+      fetch("https://vision.googleapis.com/v1/images:annotate", {
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
           Authorization:
-            'Bearer ya29.c.Kp8BEQimwSN7X1aTJNH_rbNaSwlLeYr1G1Uqf-4pmSLcP_zfiuetryX_jaU9nk399a8RUnnhTs94kMGEJyLnHOzoNF8am48Os5vkRFbOiWA6vnNnqSJEoBGrcUD3PDAsK-61IPKohiLIBY-bG1vRlUVRPAfnao64IalWCzqt8GzomVlCRBxbZIqbezV4dLaYi1OAlbZ7kI_nVr_gDEwjf4Ic...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................',
+            "Bearer ya29.c.Kp8BEQh9l5O5jlRaZoS2KC2zNb7RR4Gw1waq2aRLQWsJJoztInUph2Ro_oVlBg3hdE7f4kg7OLkqN8KqLwWZjwvYc0_cP9E3ArE4My-w_ogFK9EmJNJTekCTPgxTs1iLU5uJ05zDtY_0TFmbFeD3_T1Npl7HZkEDJSZjuJAjEkJvZCFsvyWbmRM-lmmyJnFQheVYrUQNS9cFMWD78S87uqOy...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
         },
         body: JSON.stringify(request),
       })
@@ -142,7 +142,7 @@ const App = () => {
           for (let i = 0; i < faceAnnotations.length; i++) {
             console.log(faceAnnotations[i].fdBoundingPoly.vertices);
           }
-          console.log('Test');
+          console.log("Test");
           faceCoords = faceAnnotations[0].fdBoundingPoly.vertices;
           console.log(faceCoords);
         })
@@ -190,14 +190,14 @@ const App = () => {
     };
     try {
       fetch(
-        'https://us-central1-aiplatform.googleapis.com/v1/projects/mask-detector-327103/locations/us-central1/endpoints/4703710743625728000:predict',
+        "https://us-central1-aiplatform.googleapis.com/v1/projects/mask-detector-327103/locations/us-central1/endpoints/4703710743625728000:predict",
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
+            Accept: "application/json",
+            "Content-Type": "application/json",
             Authorization:
-              'Bearer ya29.a0ARrdaM9vSyTV_W1ZcN133u8IG6nKoLaKh0vHj0zlk98-MP2lOgu_9xOcCeOOf4Nm5566Wu46jybgArlXm37ew-fA7AOQLjaHd4jocHwXDUZ2nSLWB620ab4Ttq9ua0qeGnpuumU4wZ6eP3iNEl7lp6vBw2Oy4Yj_pEWGVg',
+              "Bearer ya29.a0ARrdaM_LB7-hGNmLggzKDLFxDsQLVZYolmcmsYRflm9qWBaBgc2g3dMgHFFcRmkiwzznPfRgr1XFWn3SxI7iO84F7SaxQgybfy-7NEo2IqBtoeno5o0hH7YyfqClf24SV-IYxGQ3o115VpwZgSEH6V_L0H-8rHF01VJr3g",
           },
           body: JSON.stringify(request),
         }
@@ -218,12 +218,12 @@ const App = () => {
     console.warn(strip);
 
     // IMAGE DATA
-    const data = photo.toDataURL('image/jpeg');
+    const data = photo.toDataURL("image/jpeg");
     console.warn(data);
     // send request to vertex AI
-    getCoord(data.split(',')[1]);
+    getCoord(data.split(",")[1]);
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     // link.href = data;
     // link.setAttribute('download', 'myWebcam');
     link.innerHTML = `<img src='${data}' alt='thumbnail' id='screenshot'/>`;
@@ -237,11 +237,11 @@ const App = () => {
 
   return (
     <div>
-      <h1 style={{ margin: '10px', textAlign: 'center', fontSize: 50 }}>
-        {' '}
-        Mask Detector{' '}
+      <h1 style={{ margin: "10px", textAlign: "center", fontSize: 50 }}>
+        {" "}
+        Mask Detector{" "}
       </h1>
-      <div style={{ margin: '10px', textAlign: 'center' }}>
+      <div style={{ margin: "10px", textAlign: "center" }}>
         <button onClick={() => takePhoto()}>Take a photo</button>
       </div>
 
@@ -250,23 +250,23 @@ const App = () => {
           onCanPlay={() => paintToCanvas()}
           ref={videoRef}
           style={{
-            transform: 'rotateY(180deg)',
-            display: 'block',
-            marginLeft: 'auto',
-            marginRight: 'auto',
+            transform: "rotateY(180deg)",
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
         />
         <div
           ref={strip2Ref}
-          style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
+          style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
         />
       </div>
-      <canvas ref={photoRef} style={{ display: 'none' }} />
-      <div style={{ margin: '10px', display: 'none' }}>
+      <canvas ref={photoRef} style={{ display: "none" }} />
+      <div style={{ margin: "10px", display: "none" }}>
         <div ref={stripRef} />
       </div>
-      <canvas ref={photo2Ref} style={{ display: 'none' }} />
-      <div style={{ margin: '10px' }}></div>
+      <canvas ref={photo2Ref} style={{ display: "none" }} />
+      <div style={{ margin: "10px" }}></div>
     </div>
   );
 };
