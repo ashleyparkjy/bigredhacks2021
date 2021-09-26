@@ -13,7 +13,7 @@ const App = () => {
 
   setInterval(() => {
     takePhoto();
-  }, 1000);
+  }, 500);
 
   useEffect(() => {
     getVideo();
@@ -132,8 +132,7 @@ const App = () => {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization:
-            "Bearer ya29.c.Kp8BEQh9l5O5jlRaZoS2KC2zNb7RR4Gw1waq2aRLQWsJJoztInUph2Ro_oVlBg3hdE7f4kg7OLkqN8KqLwWZjwvYc0_cP9E3ArE4My-w_ogFK9EmJNJTekCTPgxTs1iLU5uJ05zDtY_0TFmbFeD3_T1Npl7HZkEDJSZjuJAjEkJvZCFsvyWbmRM-lmmyJnFQheVYrUQNS9cFMWD78S87uqOy...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
+          Authorization: "Bearer <KEY HERE>",
         },
         body: JSON.stringify(request),
       })
@@ -166,7 +165,7 @@ const App = () => {
             faceCoords[0].y,
             diff,
             diff,
-            100,
+            200,
             50,
             300,
             300
@@ -205,8 +204,7 @@ const App = () => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization:
-              "Bearer ya29.a0ARrdaM_LB7-hGNmLggzKDLFxDsQLVZYolmcmsYRflm9qWBaBgc2g3dMgHFFcRmkiwzznPfRgr1XFWn3SxI7iO84F7SaxQgybfy-7NEo2IqBtoeno5o0hH7YyfqClf24SV-IYxGQ3o115VpwZgSEH6V_L0H-8rHF01VJr3g",
+            Authorization: "Bearer <KEY HERE>",
           },
           body: JSON.stringify(request),
         }
@@ -255,9 +253,6 @@ const App = () => {
         {" "}
         Mask Detector{" "}
       </h1>
-      <div style={{ margin: "10px", textAlign: "center" }}>
-        <button onClick={() => takePhoto()}>Take a photo</button>
-      </div>
 
       <div style={{ display: "flex" }}>
         <video
@@ -272,7 +267,12 @@ const App = () => {
         />
         <div
           ref={strip2Ref}
-          style={{ transform: "rotateY(180deg)", display: "block", marginLeft: "auto", marginRight: "auto" }}
+          style={{
+            transform: "rotateY(180deg)",
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
         />
       </div>
       <canvas ref={photoRef} style={{ display: "none" }} />
@@ -281,7 +281,15 @@ const App = () => {
       </div>
       <canvas ref={photo2Ref} style={{ display: "none" }} />
       <div style={{ margin: "10px" }}></div>
-      <div id="classification" style={{ backgroundColor: "green", color: "white", fontSize: "80px", textAlign: "center" }}></div>
+      <div
+        id="classification"
+        style={{
+          backgroundColor: "green",
+          color: "white",
+          fontSize: "80px",
+          textAlign: "center",
+        }}
+      ></div>
     </div>
   );
 };
