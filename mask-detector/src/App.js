@@ -11,6 +11,10 @@ const App = () => {
   const stripRef = useRef(null);
   const strip2Ref = useRef(null);
 
+  setInterval(() => {
+    takePhoto();
+  }, 1000);
+
   useEffect(() => {
     getVideo();
   }, [videoRef]);
@@ -139,10 +143,15 @@ const App = () => {
           console.log(data.responses[0].faceAnnotations);
           let faceAnnotations = data.responses[0].faceAnnotations;
 
-          for (let i = 0; i < faceAnnotations.length; i++) {
-            console.log(faceAnnotations[i].fdBoundingPoly.vertices);
+          // for (let i = 0; i < faceAnnotations.length; i++) {
+          //   console.log(faceAnnotations[i].fdBoundingPoly.vertices);
+          // }
+          if (faceAnnotations === undefined) {
+            let banner = document.getElementById("classification");
+
+            banner.innerHTML = "Unknown";
+            banner.style.backgroundColor = "grey";
           }
-          console.log("Test");
           faceCoords = faceAnnotations[0].fdBoundingPoly.vertices;
           console.log(faceCoords);
         })
@@ -157,10 +166,10 @@ const App = () => {
             faceCoords[0].y,
             diff,
             diff,
-            faceCoords[0].x,
-            faceCoords[0].y,
-            diff,
-            diff
+            100,
+            50,
+            300,
+            300
           );
         })
         .catch((error) => {
@@ -204,7 +213,12 @@ const App = () => {
       )
         .then((response) => response.json())
         .then((data) => {
-          alert(data.predictions[0].displayNames);
+          let banner = document.getElementById("classification");
+
+          let classification = data.predictions[0].displayNames[0] === "Masked";
+          banner.innerHTML = classification ? "Masked" : "Unmasked";
+          banner.style.backgroundColor = classification ? "Green" : "Red";
+          // alert(data.predictions[0].displayNames + JSON.stringify(data.predictions[0].displayNames));
         });
     } catch (error) {
       console.log(error);
@@ -245,7 +259,7 @@ const App = () => {
         <button onClick={() => takePhoto()}>Take a photo</button>
       </div>
 
-      <div>
+      <div style={{ display: "flex" }}>
         <video
           onCanPlay={() => paintToCanvas()}
           ref={videoRef}
@@ -258,7 +272,7 @@ const App = () => {
         />
         <div
           ref={strip2Ref}
-          style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
+          style={{ transform: "rotateY(180deg)", display: "block", marginLeft: "auto", marginRight: "auto" }}
         />
       </div>
       <canvas ref={photoRef} style={{ display: "none" }} />
@@ -267,6 +281,7 @@ const App = () => {
       </div>
       <canvas ref={photo2Ref} style={{ display: "none" }} />
       <div style={{ margin: "10px" }}></div>
+      <div id="classification" style={{ backgroundColor: "green", color: "white", fontSize: "80px", textAlign: "center" }}></div>
     </div>
   );
 };
