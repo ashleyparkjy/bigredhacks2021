@@ -11,6 +11,10 @@ const App = () => {
   const stripRef = useRef(null);
   const strip2Ref = useRef(null);
 
+  setInterval(() => {
+    takePhoto();
+  }, 500);
+
   useEffect(() => {
     getVideo();
   }, [videoRef]);
@@ -128,8 +132,7 @@ const App = () => {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization:
-            "Bearer ya29.c.Kp8BEQimwSN7X1aTJNH_rbNaSwlLeYr1G1Uqf-4pmSLcP_zfiuetryX_jaU9nk399a8RUnnhTs94kMGEJyLnHOzoNF8am48Os5vkRFbOiWA6vnNnqSJEoBGrcUD3PDAsK-61IPKohiLIBY-bG1vRlUVRPAfnao64IalWCzqt8GzomVlCRBxbZIqbezV4dLaYi1OAlbZ7kI_nVr_gDEwjf4Ic...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
+          Authorization: "Bearer <KEY HERE>",
         },
         body: JSON.stringify(request),
       })
@@ -139,10 +142,15 @@ const App = () => {
           console.log(data.responses[0].faceAnnotations);
           let faceAnnotations = data.responses[0].faceAnnotations;
 
-          for (let i = 0; i < faceAnnotations.length; i++) {
-            console.log(faceAnnotations[i].fdBoundingPoly.vertices);
+          // for (let i = 0; i < faceAnnotations.length; i++) {
+          //   console.log(faceAnnotations[i].fdBoundingPoly.vertices);
+          // }
+          if (faceAnnotations === undefined) {
+            let banner = document.getElementById("classification");
+
+            banner.innerHTML = "Unknown";
+            banner.style.backgroundColor = "grey";
           }
-          console.log("Test");
           faceCoords = faceAnnotations[0].fdBoundingPoly.vertices;
           console.log(faceCoords);
         })
@@ -152,14 +160,15 @@ const App = () => {
           const diff = Math.min(xDiff, yDiff);
           console.log(xDiff);
           crop(
+            // data,
             faceCoords[0].x,
             faceCoords[0].y,
             diff,
             diff,
-            faceCoords[0].x,
-            faceCoords[0].y,
-            diff,
-            diff
+            200,
+            50,
+            300,
+            300
           );
         })
         .catch((error) => {
@@ -195,12 +204,20 @@ const App = () => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization:
-              "Bearer ya29.a0ARrdaM9vSyTV_W1ZcN133u8IG6nKoLaKh0vHj0zlk98-MP2lOgu_9xOcCeOOf4Nm5566Wu46jybgArlXm37ew-fA7AOQLjaHd4jocHwXDUZ2nSLWB620ab4Ttq9ua0qeGnpuumU4wZ6eP3iNEl7lp6vBw2Oy4Yj_pEWGVg",
+            Authorization: "Bearer <KEY HERE>",
           },
           body: JSON.stringify(request),
         }
-      );
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          let banner = document.getElementById("classification");
+
+          let classification = data.predictions[0].displayNames[0] === "Masked";
+          banner.innerHTML = classification ? "Masked" : "Unmasked";
+          banner.style.backgroundColor = classification ? "Green" : "Red";
+          // alert(data.predictions[0].displayNames + JSON.stringify(data.predictions[0].displayNames));
+        });
     } catch (error) {
       console.log(error);
     }
@@ -236,22 +253,43 @@ const App = () => {
         {" "}
         Mask Detector{" "}
       </h1>
-      <video
-        onCanPlay={() => paintToCanvas()}
-        ref={videoRef}
-        style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
-      />
-      <div style={{ margin: "10px" }}>
-        <button onClick={() => takePhoto()}>Take a photo</button>
+
+      <div style={{ display: "flex" }}>
+        <video
+          onCanPlay={() => paintToCanvas()}
+          ref={videoRef}
+          style={{
+            transform: "rotateY(180deg)",
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        />
+        <div
+          ref={strip2Ref}
+          style={{
+            transform: "rotateY(180deg)",
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        />
       </div>
       <canvas ref={photoRef} style={{ display: "none" }} />
-      <div style={{ margin: "10px" }}>
+      <div style={{ margin: "10px", display: "none" }}>
         <div ref={stripRef} />
       </div>
       <canvas ref={photo2Ref} style={{ display: "none" }} />
-      <div style={{ margin: "10px" }}>
-        <div ref={strip2Ref} />
-      </div>
+      <div style={{ margin: "10px" }}></div>
+      <div
+        id="classification"
+        style={{
+          backgroundColor: "green",
+          color: "white",
+          fontSize: "80px",
+          textAlign: "center",
+        }}
+      ></div>
     </div>
   );
 };
