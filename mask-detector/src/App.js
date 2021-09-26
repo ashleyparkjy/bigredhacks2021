@@ -69,15 +69,47 @@ const App = () => {
           Accept: "application/json",
           "Content-Type": "application/json",
           Authorization:
-            "Bearer ya29.c.Kp8BEQjREaTQ7MH6nYAumueziSkLkuol8Xo8IbOjng9l9ePc5OQ3DXeCZ7Yr5AGnCYCyCoa4AiGML4EI41tCAnnGF5wjDQ0OufGtULMQ8iNRe6LXucTQ5oUAfDY-uI2cXeAXG66tG7p_EIpgRhukqAKlFYdH2YcugkX6e5TyKbUPI3gvQq4ixK8pmO6xb_Ey-aMmTGBaaEWT1pcrToDSVu6n...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
+            "Bearer ya29.c.Kp8BEQgLbLHcSU3MvmwJFs4txeesUJt8uFC0St0B3QRq8OZ6XZvyXifHUccUf3PqNXLK_TBym96pVAURMPMapBS20IxZ9uh1mdRYkpeQz4eWKVyHREZ-jarPMvTo9sJdV7Ezx0B3RkskBQkBXif5mDzyPTN3YLj6f3iZH4B3oW87U2p-1InYz6VYo6BAZ0qaOuLfHg4E8FcVM-Cz506AJ7q7...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
         },
         body: JSON.stringify(request),
       });
     } catch (error) {
       console.log(error);
     }
+    detectMask(data);
     // send request to vision api
     // given response, crop image with x,y coordinates
+  };
+
+  const detectMask = (data) => {
+    const request = {
+      instances: [
+        {
+          content: data,
+        },
+      ],
+      parameters: {
+        confidenceThreshold: 0.5,
+        maxPredictions: 5,
+      },
+    };
+    try {
+      fetch(
+        "https://us-central1-aiplatform.googleapis.com/v1/projects/mask-detector-327103/locations/us-central1/endpoints/4703710743625728000:predict",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer ya29.a0ARrdaM9JQx8oBt5qzAe_ee3mL6VfsPDTSeiuCV4mA6QiDJ1QnVStlbv6qmPQc11pdzv32RkXQdtk91Nmofpjv1Fg-R0ojNZD3l50vSsSjeaYNMNRJ33-DqgyjfohC_Grawd1YM_OC8AafJFTCL_DN-z4KlgoKQopiPqt4A",
+          },
+          body: JSON.stringify(request),
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const takePhoto = () => {
@@ -106,11 +138,14 @@ const App = () => {
 
   return (
     <div>
-      <h1 style={{ margin: "10px" }}> Mask Detector </h1>
+      <h1 style={{ margin: "10px", textAlign: "center", fontSize: 50 }}>
+        {" "}
+        Mask Detector{" "}
+      </h1>
       <video
         onCanPlay={() => paintToCanvas()}
         ref={videoRef}
-        style={{ margin: "10px" }}
+        style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
       />
       <div style={{ margin: "10px" }}>
         <button onClick={() => takePhoto()}>Take a photo</button>
