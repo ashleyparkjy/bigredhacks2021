@@ -152,6 +152,7 @@ const App = () => {
           const diff = Math.min(xDiff, yDiff);
           console.log(xDiff);
           crop(
+            // data,
             faceCoords[0].x,
             faceCoords[0].y,
             diff,
@@ -200,7 +201,11 @@ const App = () => {
           },
           body: JSON.stringify(request),
         }
-      );
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          alert(data.predictions[0].displayNames);
+        });
     } catch (error) {
       console.log(error);
     }
@@ -236,22 +241,27 @@ const App = () => {
         {" "}
         Mask Detector{" "}
       </h1>
-      <video
-        onCanPlay={() => paintToCanvas()}
-        ref={videoRef}
-        style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
-      />
-      <div style={{ margin: "10px" }}>
+      <div style={{ margin: "10px", textAlign: "center" }}>
         <button onClick={() => takePhoto()}>Take a photo</button>
       </div>
+
+      <div>
+        <video
+          onCanPlay={() => paintToCanvas()}
+          ref={videoRef}
+          style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
+        />
+        <div
+          ref={strip2Ref}
+          style={{ display: "block", marginLeft: "auto", marginRight: "auto" }}
+        />
+      </div>
       <canvas ref={photoRef} style={{ display: "none" }} />
-      <div style={{ margin: "10px" }}>
+      <div style={{ margin: "10px", display: "none" }}>
         <div ref={stripRef} />
       </div>
       <canvas ref={photo2Ref} style={{ display: "none" }} />
-      <div style={{ margin: "10px" }}>
-        <div ref={strip2Ref} />
-      </div>
+      <div style={{ margin: "10px" }}></div>
     </div>
   );
 };
