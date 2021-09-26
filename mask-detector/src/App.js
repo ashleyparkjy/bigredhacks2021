@@ -72,11 +72,28 @@ const App = () => {
             "Bearer ya29.c.Kp8BEQjREaTQ7MH6nYAumueziSkLkuol8Xo8IbOjng9l9ePc5OQ3DXeCZ7Yr5AGnCYCyCoa4AiGML4EI41tCAnnGF5wjDQ0OufGtULMQ8iNRe6LXucTQ5oUAfDY-uI2cXeAXG66tG7p_EIpgRhukqAKlFYdH2YcugkX6e5TyKbUPI3gvQq4ixK8pmO6xb_Ey-aMmTGBaaEWT1pcrToDSVu6n...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................",
         },
         body: JSON.stringify(request),
-      });
+      }).then(response => response.json())
+        .then(data => {
+          console.log(data);
+          console.log(data.responses[0].faceAnnotations)
+          let faceAnnotations = data.responses[0].faceAnnotations;
+
+          for (let i = 0; i < faceAnnotations.length; i++) {
+            console.log(faceAnnotations[i].boundingPoly.vertices);
+          }
+
+          let faceCoords = faceAnnotations[0].boundingPoly.vertices
+
+        })
+        .catch(error => {
+          console.log(error);
+        });
     } catch (error) {
       console.log(error);
     }
     // send request to vision api
+
+
     // given response, crop image with x,y coordinates
   };
 
@@ -91,6 +108,7 @@ const App = () => {
     console.warn(data);
     // send request to vertex AI
     getCoord(data.split(",")[1]);
+
 
     const link = document.createElement("a");
     link.href = data;
